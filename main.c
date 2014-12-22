@@ -51,10 +51,6 @@ void main(void) {
 	HwAbUart_SendString("Completed StateMachineExample");
 	HwAbUart_SendString("\r\n\r\n");
 
-
-
-
-
 	__no_operation();
 
     for(;;)
@@ -105,7 +101,6 @@ void Init_GPIO()
 {
     PM5CTL0 &= ~LOCKLPM5;                   // Disable the GPIO power-on default high-impedance mode
                                             // to activate previously configured port settings
-
 
     // Set all GPIO pins to output low for low power
     P1OUT = 0;

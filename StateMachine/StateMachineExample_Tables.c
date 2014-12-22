@@ -13,22 +13,24 @@
 // --- STATE TRANSITION SIGNALS TABLES ---
 const StaMchSignal_t signalTbl[ExSig_Count] = {
 	// enumVal ,name
-	{ ExSigW, "Signal W" },
-	{ ExSigX, "Signal X" },
-	{ ExSigY, "Signal Y" },
-	{ ExSigZ, "Signal Z" }
+	{ ExSigW, "Sig_W" },
+	{ ExSigX, "Sig_X" },
+	{ ExSigY, "Sig_Y" },
+	{ ExSigZ, "Sig_Z" }
 };
 
 static const StaMchSignalTableEntry_t SignalsStateA[] = {	// Signals expected in State A
 	// signalEnumVal, nextStateEnumVal
-	{ ExSigW,	ExStaBBB },
-	{ ExSigX,	ExStaFFF },
+	{ ExSigW,	      ExStaBBB },
+	{ ExSigX,	      ExStaFFF },
+	{ ExSigY,	      ExStaFFF },
+	{ ExSigZ,	      ExStaFFF },
 	{ -1, -1 } // Always end with negative values.  Indicates end-of-list.
 };
 
 static const StaMchSignalTableEntry_t SignalsStateB[] = {	// Signals expected in State B
 	// signalEnumVal, nextStateEnumVal
-	{ ExSigW,	ExStaCCC },
+	{ ExSigW,	      ExStaCCC },
 	{ -1, -1 } // Always end with negative values.  Indicates end-of-list.
 };
 

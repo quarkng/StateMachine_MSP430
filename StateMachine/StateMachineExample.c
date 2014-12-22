@@ -23,6 +23,9 @@ void StateMachineExample(void)
 
 	StaMchBase_Init( &stateMachine,	ExSta_Count, ExSig_Count, stateTbl, signalTbl);
 
+	StaMchBase_PrintCsvTable( &stateMachine );
+
+
 	StaMchBase_SetInitialState( &stateMachine, ExStaAAA );
 
 	while( ! exitExample )

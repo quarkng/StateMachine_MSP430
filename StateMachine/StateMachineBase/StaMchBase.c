@@ -7,6 +7,8 @@
 
 #include "StaMchBase.h"
 
+#include "HwAbUart.h"
+
 
 void StaMchBase_Init( StaMchBase_t *context,
 					  uint8_t stateCount, uint8_t sigCount,
@@ -94,3 +96,56 @@ bool StaMchBase_SignalTransition( StaMchBase_t *context, uint8_t signalEnumVal )
 	return signalHasEffect;
 }
 
+//****************************************************************************************
+void StaMchBase_PrintCsvTable( const StaMchBase_t *context )
+{
+	int16_t fromStaNum;
+	int16_t toStaNum;
+
+	while( ! HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
+	HwAbUart_SendString("\r\nFrom \\ To");
+
+	// Header row.  List all the destination states.
+	for( toStaNum=0; toStaNum < context->stateCount; toStaNum++ )
+	{
+		while( ! HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
+		HwAbUart_SendString(",");
+		HwAbUart_SendString(context->states[toStaNum].name);
+	}
+	HwAbUart_SendString("\r\n");
+
+	// Each state's transition list is represented by a row in the CSV output
+	for( fromStaNum = 0; fromStaNum < context->stateCount; fromStaNum++ )
+	{
+		const StaMchState_t *fromState = &(context->states[fromStaNum]);
+		HwAbUart_SendString(fromState->name);
+		for( toStaNum = 0; toStaNum < context->stateCount; toStaNum++ )
+		{
+			int16_t transNum;
+			bool printOrSymbol = false;
+
+			HwAbUart_SendString(",");
+
+			for( transNum=0; transNum < context->sigCount; transNum++ )
+			{	// Find the matching signal in the transition table
+				if( fromState->transitions[transNum].nextStateEnumVal == toStaNum )
+				{
+					int16_t sigNum = fromState->transitions[transNum].signalEnumVal;
+
+					if( printOrSymbol )
+					{
+						HwAbUart_SendString(" | ");
+					}
+					HwAbUart_SendString( context->signals[sigNum].name );
+					printOrSymbol = true;
+				}
+				else if( fromState->transitions[transNum].signalEnumVal < 0)
+				{
+					break; // end of transitions list
+				}
+			}
+		}
+
+		HwAbUart_SendString("\r\n");
+	}
+}
