@@ -8,6 +8,9 @@
 #ifndef STATEMACHINEEXAMPLEFUNCTIONS_H_
 #define STATEMACHINEEXAMPLEFUNCTIONS_H_
 
+#include <stdbool.h>
+
+extern bool exitExample;
 
 
 void StateAEntry( int16_t otherStateEnumVal, int16_t signalEnumval );

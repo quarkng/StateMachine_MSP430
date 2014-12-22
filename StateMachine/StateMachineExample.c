@@ -9,8 +9,10 @@
 #include "StateMachineExample.h"
 #include "StateMachineExample_Tables.h"
 #include "StateMachineExample_StateAndSig.h"
+#include "StateMachineExample_Functions.h"
 
 #include "StateMachineBase/StaMchBase.h"
+
 
 //****************************************************************************************
 
@@ -18,7 +20,12 @@ void StateMachineExample(void)
 {
 	static StaMchBase_t stateMachine;
 
-	StaMchBase_Init( &stateMachine,
-			ExSta_Count, ExSig_Count,
-			stateTbl, signalTbl);
+	StaMchBase_Init( &stateMachine,	ExSta_Count, ExSig_Count, stateTbl, signalTbl);
+
+	StaMchBase_SetInitialState( &stateMachine, ExStaAAA );
+
+	while( ! exitExample )
+	{
+		StaMchBase_RunStateFunc( & stateMachine );
+	}
 }

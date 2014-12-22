@@ -48,7 +48,7 @@ void StaMchBase_RunStateFunc( StaMchBase_t *context )
 		}
 
 		// --- Run exit function of previous state ---
-		if( (context->currentState < 0) || (context->currentState >= context->stateCount) )
+		if( (context->currentState >= 0) && (context->currentState < context->stateCount) )
 		{
 			(*context->states[ context->currentState ].exitFunc)( context->nextState, context->previousSignal );
 		}

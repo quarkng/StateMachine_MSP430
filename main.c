@@ -3,6 +3,7 @@
 
 #include "HwAbUart.h"
 #include "__LogTraceExample.h"
+#include "StateMachineExample.h"
 
 //****************************************************************************************
 
@@ -41,13 +42,11 @@ void main(void) {
 
 	LogTraceExample();
 	HwAbUart_SendString("\r\n\r\n");
+	while( ! HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
 
 
-
-
-
-
-
+	StateMachineExample();
+	HwAbUart_SendString("\r\n\r\n");
 
 
 

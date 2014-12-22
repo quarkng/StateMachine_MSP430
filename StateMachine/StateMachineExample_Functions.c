@@ -14,6 +14,19 @@
 #include "HwAbUart.h"
 #include "BytesToHexString.h"
 
+
+bool exitExample = false;
+
+//****************************************************************************************
+void ProcessRx( uint8_t rx )
+{
+	switch( rx )
+	{
+		default:
+		break;
+	}
+}
+
 //****************************************************************************************
 static void DoEntry(int16_t enteredState, int16_t prevState, int16_t signal )
 {
@@ -21,7 +34,7 @@ static void DoEntry(int16_t enteredState, int16_t prevState, int16_t signal )
 	const char* prevStateName = (prevState < 0) ? "N/A" : stateTbl[prevState].name;
 	const char* signalName = (signal < 0) ? "N/A" : signalTbl[signal].name;
 
-	while( HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
+	while( ! HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
 
 	HwAbUart_SendString("Entered [");
 	HwAbUart_SendString(enteredStateName);
@@ -35,18 +48,27 @@ static void DoEntry(int16_t enteredState, int16_t prevState, int16_t signal )
 static void DoRun( int16_t currentState, uint32_t iteration )
 {
 	const char* currentStateName = stateTbl[currentState].name;
+	uint8_t  rx;
+	bool valid;
 
-	while( HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
+	while( ! HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
 	if( iteration < 16 )
 	{
 		char hexStr[16];
+		uint8_t iter = iteration;
 
 		HwAbUart_SendString("Run [");
 		HwAbUart_SendString(currentStateName);
-		HwAbUart_SendString("] iteration [0x");
-		BytesToHexString( hexStr, sizeof(hexStr)/sizeof(hexStr[0]), &iteration, sizeof(iteration) );
+		HwAbUart_SendString("] iteration [");
+		BytesToHexString( hexStr, sizeof(hexStr)/sizeof(hexStr[0]), &iter, sizeof(iter) );
 		HwAbUart_SendString(hexStr);
 		HwAbUart_SendString("]\r\n");
+	}
+
+	rx = HwAbUart_GetRxByte(&valid);
+	if( valid )
+	{
+		ProcessRx( rx );
 	}
 
 	__delay_cycles(1000000);
@@ -58,7 +80,7 @@ static void DoExit(int16_t exitingState, int16_t nextState, int16_t signal )
 	const char* nextStateName = stateTbl[nextState].name;
 	const char* signalName = signalTbl[signal].name;
 
-	while( HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
+	while( ! HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
 
 	HwAbUart_SendString("Exiting [");
 	HwAbUart_SendString(exitingStateName);
