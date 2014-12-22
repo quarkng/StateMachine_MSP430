@@ -21,5 +21,25 @@ void StateBEntry( int16_t otherStateEnumVal, int16_t signalEnumval );
 void StateBRun( uint32_t iteration );
 void StateBExit( int16_t otherStateEnumVal, int16_t signalEnumval );
 
+void StateCEntry( int16_t otherStateEnumVal, int16_t signalEnumval );
+void StateCRun( uint32_t iteration );
+void StateCExit( int16_t otherStateEnumVal, int16_t signalEnumval );
+
+void StateDEntry( int16_t otherStateEnumVal, int16_t signalEnumval );
+void StateDRun( uint32_t iteration );
+void StateDExit( int16_t otherStateEnumVal, int16_t signalEnumval );
+
+void StateEEntry( int16_t otherStateEnumVal, int16_t signalEnumval );
+void StateERun( uint32_t iteration );
+void StateEExit( int16_t otherStateEnumVal, int16_t signalEnumval );
+
+void StateFEntry( int16_t otherStateEnumVal, int16_t signalEnumval );
+void StateFRun( uint32_t iteration );
+void StateFExit( int16_t otherStateEnumVal, int16_t signalEnumval );
+
+void StateExitEntry( int16_t otherStateEnumVal, int16_t signalEnumval );
+void StateExitRun( uint32_t iteration );
+void StateExitExit( int16_t otherStateEnumVal, int16_t signalEnumval );
+
 
 #endif /* STATEMACHINEEXAMPLEFUNCTIONS_H_ */

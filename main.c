@@ -34,18 +34,21 @@ int _system_pre_init(void)
 //****************************************************************************************
 void main(void) {
     HardwareInit();
-	HwAbUart_SendString("\r\n**BEGIN**\r\n");
-	__delay_cycles(8000000);
-	HwAbUart_SendString("uart TX test\r\n");
+
+//	HwAbUart_SendString("\r\n**BEGIN**\r\n");
+//	__delay_cycles(8000000);
+//	HwAbUart_SendString("uart TX test\r\n");
 
     BlinkOnStartup();
 
-	LogTraceExample();
-	HwAbUart_SendString("\r\n\r\n");
-	while( ! HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
+//	LogTraceExample();
+//	HwAbUart_SendString("\r\n\r\n");
+//	while( ! HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
 
 
 	StateMachineExample();
+	while( ! HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
+	HwAbUart_SendString("Completed StateMachineExample");
 	HwAbUart_SendString("\r\n\r\n");
 
 

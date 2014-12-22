@@ -16,6 +16,7 @@ typedef enum
 	ExStaDDD,
 	ExStaEEE,
 	ExStaFFF,
+	ExSta_EXIT,
 	//...................
 	ExSta_Count
 } ExampleState_t;

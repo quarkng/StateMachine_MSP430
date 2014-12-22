@@ -19,7 +19,7 @@
 bool exitExample = false;
 
 //****************************************************************************************
-void ProcessRx( uint8_t rx )
+static void ProcessRx( uint8_t rx )
 {
 	while( ! HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
 	HwAbUart_SendString("Received ");
@@ -125,7 +125,8 @@ void StateAEntry( int16_t otherStateEnumVal, int16_t signalEnumval )
 {
 	DoEntry(ExStaAAA, otherStateEnumVal, signalEnumval);
 
-}void StateARun( uint32_t iteration )
+}
+void StateARun( uint32_t iteration )
 {
 	DoRun(ExStaAAA, iteration);
 }
@@ -138,12 +139,82 @@ void StateBEntry( int16_t otherStateEnumVal, int16_t signalEnumval )
 {
 	DoEntry(ExStaBBB, otherStateEnumVal, signalEnumval);
 
-}void StateBRun( uint32_t iteration )
+}
+void StateBRun( uint32_t iteration )
 {
 	DoRun(ExStaBBB, iteration);
 }
 void StateBExit( int16_t otherStateEnumVal, int16_t signalEnumval )
 {
 	DoExit(ExStaBBB, otherStateEnumVal, signalEnumval);
+}
+//****************************************************************************************
+void StateCEntry( int16_t otherStateEnumVal, int16_t signalEnumval )
+{
+	DoEntry(ExStaCCC, otherStateEnumVal, signalEnumval);
+
+}
+void StateCRun( uint32_t iteration )
+{
+	DoRun(ExStaCCC, iteration);
+}
+void StateCExit( int16_t otherStateEnumVal, int16_t signalEnumval )
+{
+	DoExit(ExStaCCC, otherStateEnumVal, signalEnumval);
+}
+//****************************************************************************************
+void StateDEntry( int16_t otherStateEnumVal, int16_t signalEnumval )
+{
+	DoEntry(ExStaDDD, otherStateEnumVal, signalEnumval);
+
+}
+void StateDRun( uint32_t iteration )
+{
+	DoRun(ExStaDDD, iteration);
+}
+void StateDExit( int16_t otherStateEnumVal, int16_t signalEnumval )
+{
+	DoExit(ExStaDDD, otherStateEnumVal, signalEnumval);
+}
+//****************************************************************************************
+void StateEEntry( int16_t otherStateEnumVal, int16_t signalEnumval )
+{
+	DoEntry(ExStaEEE, otherStateEnumVal, signalEnumval);
+
+}
+void StateERun( uint32_t iteration )
+{
+	DoRun(ExStaEEE, iteration);
+}
+void StateEExit( int16_t otherStateEnumVal, int16_t signalEnumval )
+{
+	DoExit(ExStaEEE, otherStateEnumVal, signalEnumval);
+}
+//****************************************************************************************
+void StateFEntry( int16_t otherStateEnumVal, int16_t signalEnumval )
+{
+	DoEntry(ExStaFFF, otherStateEnumVal, signalEnumval);
+}
+void StateFRun( uint32_t iteration )
+{
+	DoRun(ExStaFFF, iteration);
+}
+void StateFExit( int16_t otherStateEnumVal, int16_t signalEnumval )
+{
+	DoExit(ExStaFFF, otherStateEnumVal, signalEnumval);
+}
+//****************************************************************************************
+void StateExitEntry( int16_t otherStateEnumVal, int16_t signalEnumval )
+{
+	DoEntry(ExSta_EXIT, otherStateEnumVal, signalEnumval);
+	exitExample = true;
+}
+void StateExitRun( uint32_t iteration )
+{
+	DoRun(ExSta_EXIT, iteration);
+}
+void StateExitExit( int16_t otherStateEnumVal, int16_t signalEnumval )
+{
+	DoExit(ExSta_EXIT, otherStateEnumVal, signalEnumval);
 }
 
