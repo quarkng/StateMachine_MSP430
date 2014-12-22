@@ -8,6 +8,12 @@
 
 #include "StaMchState.h"
 
+static const StaMchSignalTableEntry_t emptyTransitions[] = {
+	{ -1, -1 } // Always end with negative values.  Indicates end-of-list.
+};
+
+
+
 void StaMchState_Init( StaMchState_t *context,  uint8_t enumVal, const char *name)
 {
 	context->enumVal 	= enumVal;
@@ -15,4 +21,5 @@ void StaMchState_Init( StaMchState_t *context,  uint8_t enumVal, const char *nam
 	context->entryFunc	= 0;
 	context->runFunc  = 0;
 	context->exitFunc	= 0;
+	context->transitions = emptyTransitions;
 }

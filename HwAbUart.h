@@ -23,6 +23,7 @@ void HwAbUart_Init(void);
 
 void HwAbUart_Send(const uint8_t *pui8Buffer, uint32_t ui32Count);
 void HwAbUart_SendString(const char *pcBuffer);
+bool HwAbUart_IsDoneTransmitting( void );
 
 uint8_t  HwAbUart_GetRxByte(bool *valid);
 uint16_t HwAbUart_GetRxContent(uint8_t *buffer, uint16_t buffSize);

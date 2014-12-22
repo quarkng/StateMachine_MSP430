@@ -81,6 +81,11 @@ void HwAbUart_SendString(const char *pcBuffer)
 
 	EnsureTransmitting();
 }
+//*****************************************************************************
+bool HwAbUart_IsDoneTransmitting( void )
+{
+	return ( !(UCA0IE & UCTXIE) );
+}
 
 //*****************************************************************************
 uint8_t  HwAbUart_GetRxByte(bool *valid)
