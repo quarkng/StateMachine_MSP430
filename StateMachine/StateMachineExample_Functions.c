@@ -8,6 +8,7 @@
 #include "intrinsics.h"
 
 #include "StateMachineExample.h"
+#include "StateMachineExample_Functions.h"
 #include "StateMachineExample_StateAndSig.h"
 #include "StateMachineExample_Tables.h"
 
@@ -20,11 +21,39 @@ bool exitExample = false;
 //****************************************************************************************
 void ProcessRx( uint8_t rx )
 {
+	while( ! HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
+	HwAbUart_SendString("Received ");
+	HwAbUart_Send(&rx, 1);
+	HwAbUart_SendString("\r\n");
+	while( ! HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
+
 	switch( rx )
 	{
+		case 'w':
+		case 'W':
+			StateMachineExample_Signal(ExSigW);
+			break;
+
+		case 'x':
+		case 'X':
+			StateMachineExample_Signal(ExSigX);
+			break;
+
+		case 'y':
+		case 'Y':
+			StateMachineExample_Signal(ExSigY);
+			break;
+
+		case 'z':
+		case 'Z':
+			StateMachineExample_Signal(ExSigZ);
+			break;
+
 		default:
+			HwAbUart_SendString("Type W,X,Y, or Z to send a signal.\r\n");
 		break;
 	}
+
 }
 
 //****************************************************************************************
@@ -52,7 +81,7 @@ static void DoRun( int16_t currentState, uint32_t iteration )
 	bool valid;
 
 	while( ! HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
-	if( iteration < 16 )
+	if( iteration < 5 )
 	{
 		char hexStr[16];
 		uint8_t iter = iteration;

@@ -8,8 +8,14 @@
 #ifndef STATEMACHINEEXAMPLE_H_
 #define STATEMACHINEEXAMPLE_H_
 
+#include <stdint.h>
+#include <stdbool.h>
+
 
 void StateMachineExample(void);
 
+
+
+bool StateMachineExample_Signal(uint8_t signalEnumVal);
 
 #endif /* STATEMACHINEEXAMPLE_H_ */

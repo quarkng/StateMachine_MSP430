@@ -14,11 +14,12 @@
 #include "StateMachineBase/StaMchBase.h"
 
 
+ static StaMchBase_t stateMachine;
+
 //****************************************************************************************
 
 void StateMachineExample(void)
 {
-	static StaMchBase_t stateMachine;
 
 	StaMchBase_Init( &stateMachine,	ExSta_Count, ExSig_Count, stateTbl, signalTbl);
 
@@ -28,4 +29,10 @@ void StateMachineExample(void)
 	{
 		StaMchBase_RunStateFunc( & stateMachine );
 	}
+}
+
+//****************************************************************************************
+bool StateMachineExample_Signal(uint8_t signalEnumVal)
+{
+	return StaMchBase_SignalTransition( &stateMachine, signalEnumVal );
 }
