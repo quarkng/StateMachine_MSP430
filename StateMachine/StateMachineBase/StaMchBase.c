@@ -9,7 +9,7 @@
 
 #include "HwAbUart.h"
 
-
+//****************************************************************************************
 void StaMchBase_Init( StaMchBase_t *context,
 					  uint8_t stateCount, uint8_t sigCount,
 					  const StaMchState_t *states, const StaMchSignal_t *signals)
@@ -25,6 +25,79 @@ void StaMchBase_Init( StaMchBase_t *context,
 	context->signals = signals;
 }
 
+//****************************************************************************************
+// Checks if the tables have reasonable values.  Return number of errors found.
+uint16_t StaMchBase_CheckTables( const StaMchBase_t *context )
+{
+	uint16_t errors = 0;
+	int16_t  i;
+
+	if( context->stateCount == 0 )
+	{
+		errors++;
+	}
+	if( context->sigCount == 0 )
+	{
+		errors++;
+	}
+
+	// Check the signals table
+	for( i = 0; i < context->sigCount; i++ )
+	{
+		const StaMchSignal_t *s = &(context->signals[i]);
+
+		if( s->enumVal != i )
+		{
+			errors++;
+		}
+	}
+
+	// Check the states table
+	for( i = 0; i < context->stateCount; i++ )
+	{
+		bool    breakProperly = false;
+		int16_t k;
+		const StaMchSignalTableEntry_t *tran;
+		const StaMchState_t *s = &(context->states[i]);
+
+		if( s->enumVal != i )
+		{
+			errors++;
+		}
+
+		// Check transition table
+		for(k=0; k <= context->sigCount; k++ )
+		{
+			tran = &(s->transitions[k]);
+
+			if( tran->signalEnumVal >= 0 )
+			{
+				if( tran->nextStateEnumVal < 0 || tran->nextStateEnumVal >= context->stateCount )
+				{
+					errors++;
+				}
+				if( tran->signalEnumVal < 0 || tran->signalEnumVal >= context->sigCount )
+				{
+					errors++;
+				}
+			}
+			else
+			{
+				breakProperly = true;
+				break;
+			}
+		}
+		if( ! breakProperly )
+		{
+			errors++; // Transition tables should end with entry containing negative values
+		}
+
+	}
+
+	return errors;
+}
+
+//****************************************************************************************
 void StaMchBase_SetInitialState( StaMchBase_t *context, uint8_t initialStateEnumVal)
 {
 	if( initialStateEnumVal < context->stateCount)
@@ -38,7 +111,7 @@ void StaMchBase_SetInitialState( StaMchBase_t *context, uint8_t initialStateEnum
 	{	// Do error logging!!!
 	}
 }
-
+//****************************************************************************************
 void StaMchBase_RunStateFunc( StaMchBase_t *context )
 {
 	if( context->nextState != context->currentState )
@@ -66,7 +139,7 @@ void StaMchBase_RunStateFunc( StaMchBase_t *context )
 
 	(*context->states[ context->currentState ].runFunc)( context->runIteration++ );
 }
-
+//****************************************************************************************
 bool StaMchBase_SignalTransition( StaMchBase_t *context, uint8_t signalEnumVal )
 {
 	bool signalHasEffect = false;

@@ -35,6 +35,9 @@ void StaMchBase_Init( StaMchBase_t *context,
 					  uint8_t stateCount, uint8_t sigCount,
 					  const StaMchState_t *states, const StaMchSignal_t *signals);
 
+// Checks if the tables have reasonable values.  Return number of errors found.
+uint16_t StaMchBase_CheckTables( const StaMchBase_t *context );
+
 void StaMchBase_SetInitialState( StaMchBase_t *context, uint8_t initialStateEnumVal);
 
 

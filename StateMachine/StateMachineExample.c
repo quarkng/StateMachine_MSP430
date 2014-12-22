@@ -23,6 +23,11 @@ void StateMachineExample(void)
 
 	StaMchBase_Init( &stateMachine,	ExSta_Count, ExSig_Count, stateTbl, signalTbl);
 
+	if( StaMchBase_CheckTables(&stateMachine) != 0 )
+	{
+		for(;;) {} // Trap on severe error
+	}
+
 	StaMchBase_PrintCsvTable( &stateMachine );
 
 
