@@ -7,7 +7,9 @@
 
 #include "StaMchBase.h"
 
-#include "HwAbUart.h"
+#ifndef NULL
+	#define NULL (0)
+#endif
 
 //****************************************************************************************
 void StaMchBase_Init( StaMchBase_t *context,
@@ -170,34 +172,34 @@ bool StaMchBase_SignalTransition( StaMchBase_t *context, uint8_t signalEnumVal )
 }
 
 //****************************************************************************************
-void StaMchBase_PrintCsvTable( const StaMchBase_t *context )
+void StaMchBase_PrintCsvTable(  StaMchBase_t *context, const InfUserStream_t *userStream )
 {
 	int16_t fromStaNum;
 	int16_t toStaNum;
 
-	while( ! HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
-	HwAbUart_SendString("\r\nFrom \\ To");
+	while(! (*userStream->isTxBufferClear)() ) {} // BUSY WAIT
+	(*userStream->sendString)("\r\nFrom \\ To");
 
 	// Header row.  List all the destination states.
 	for( toStaNum=0; toStaNum < context->stateCount; toStaNum++ )
 	{
-		while( ! HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
-		HwAbUart_SendString(",");
-		HwAbUart_SendString(context->states[toStaNum].name);
+		while(! (*userStream->isTxBufferClear)() ) {} // BUSY WAIT
+		(*userStream->sendString)(",");
+		(*userStream->sendString)(context->states[toStaNum].name);
 	}
-	HwAbUart_SendString("\r\n");
+	(*userStream->sendString)("\r\n");
 
 	// Each state's transition list is represented by a row in the CSV output
 	for( fromStaNum = 0; fromStaNum < context->stateCount; fromStaNum++ )
 	{
 		const StaMchState_t *fromState = &(context->states[fromStaNum]);
-		HwAbUart_SendString(fromState->name);
+		(*userStream->sendString)(fromState->name);
 		for( toStaNum = 0; toStaNum < context->stateCount; toStaNum++ )
 		{
 			int16_t transNum;
 			bool printOrSymbol = false;
 
-			HwAbUart_SendString(",");
+			(*userStream->sendString)(",");
 
 			for( transNum=0; transNum < context->sigCount; transNum++ )
 			{	// Find the matching signal in the transition table
@@ -207,9 +209,9 @@ void StaMchBase_PrintCsvTable( const StaMchBase_t *context )
 
 					if( printOrSymbol )
 					{
-						HwAbUart_SendString(" | ");
+						(*userStream->sendString)(" | ");
 					}
-					HwAbUart_SendString( context->signals[sigNum].name );
+					(*userStream->sendString)( context->signals[sigNum].name );
 					printOrSymbol = true;
 				}
 				else if( fromState->transitions[transNum].signalEnumVal < 0)
@@ -219,6 +221,6 @@ void StaMchBase_PrintCsvTable( const StaMchBase_t *context )
 			}
 		}
 
-		HwAbUart_SendString("\r\n");
+		(*userStream->sendString)("\r\n");
 	}
 }

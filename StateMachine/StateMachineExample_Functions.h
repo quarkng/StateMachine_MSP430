@@ -1,5 +1,5 @@
 /*
- * StateMachineExample.h
+ * StateMachineExample_Functions.h
  *
  *  Created on: Dec 21, 2014
  *      Author: Quark
@@ -9,8 +9,11 @@
 #define STATEMACHINEEXAMPLEFUNCTIONS_H_
 
 #include <stdbool.h>
+#include "InfUserStream.h"
 
 extern bool exitExample;
+
+void StateMachineExampleFunctions_Init( const InfUserStream_t *userStream );
 
 
 void StateAEntry( int16_t otherStateEnumVal, int16_t signalEnumval );

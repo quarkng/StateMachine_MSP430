@@ -10,11 +10,9 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "InfUserStream.h"
 
-
-void StateMachineExample(void);
-
-
+void StateMachineExample(const InfUserStream_t *userStream);
 
 bool StateMachineExample_Signal(uint8_t signalEnumVal);
 

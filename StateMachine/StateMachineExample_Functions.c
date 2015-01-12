@@ -12,20 +12,45 @@
 #include "StateMachineExample_StateAndSig.h"
 #include "StateMachineExample_Tables.h"
 
-#include "HwAbUart.h"
-#include "BytesToHexString.h"
-
+//#include "HwAbUart.h"
+//#include "BytesToHexString.h"
 
 bool exitExample = false;
+
+
+//****************************************************************************************
+static void BytesToHexString( char* stringBuff, uint16_t buffLen, const void *bytes, uint8_t bytesCount );
+
+static const InfUserStream_t *ui;
+
+//****************************************************************************************
+void StateMachineExampleFunctions_Init( const InfUserStream_t *userStream )
+{
+	ui = userStream;
+}
+
+//****************************************************************************************
+void dummySendString(const char *pcBuffer)
+{
+}
+//****************************************************************************************
+bool dummyIsBufferCleared(void)
+{
+	return true;
+}
 
 //****************************************************************************************
 static void ProcessRx( uint8_t rx )
 {
-	while( ! HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
-	HwAbUart_SendString("Received ");
-	HwAbUart_Send(&rx, 1);
-	HwAbUart_SendString("\r\n");
-	while( ! HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
+	char tmp[2];
+	tmp[1] = 0;
+	tmp[0] = rx;
+
+	while( ! (*ui->isTxBufferClear)() ) {} // BUSY WAIT
+	(*ui->sendString)("Received ");
+	(*ui->sendString)(tmp);
+	(*ui->sendString)("\r\n");
+	while( ! (*ui->isTxBufferClear)() ) {} // BUSY WAIT
 
 	switch( rx )
 	{
@@ -50,7 +75,7 @@ static void ProcessRx( uint8_t rx )
 			break;
 
 		default:
-			HwAbUart_SendString("Type W,X,Y, or Z to send a signal.\r\n");
+			(*ui->sendString)("Type W,X,Y, or Z to send a signal.\r\n");
 		break;
 	}
 
@@ -63,15 +88,15 @@ static void DoEntry(int16_t enteredState, int16_t prevState, int16_t signal )
 	const char* prevStateName = (prevState < 0) ? "N/A" : stateTbl[prevState].name;
 	const char* signalName = (signal < 0) ? "N/A" : signalTbl[signal].name;
 
-	while( ! HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
+	while( ! (*ui->isTxBufferClear)() ) {} // BUSY WAIT
 
-	HwAbUart_SendString("Entered [");
-	HwAbUart_SendString(enteredStateName);
-	HwAbUart_SendString("] from [");
-	HwAbUart_SendString(prevStateName);
-	HwAbUart_SendString("] on signal [");
-	HwAbUart_SendString(signalName);
-	HwAbUart_SendString("]\r\n");
+	(*ui->sendString)("Entered [");
+	(*ui->sendString)(enteredStateName);
+	(*ui->sendString)("] from [");
+	(*ui->sendString)(prevStateName);
+	(*ui->sendString)("] on signal [");
+	(*ui->sendString)(signalName);
+	(*ui->sendString)("]\r\n");
 }
 
 static void DoRun( int16_t currentState, uint32_t iteration )
@@ -80,21 +105,21 @@ static void DoRun( int16_t currentState, uint32_t iteration )
 	uint8_t  rx;
 	bool valid;
 
-	while( ! HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
+	while( ! (*ui->isTxBufferClear)() ) {} // BUSY WAIT
 	if( iteration < 5 )
 	{
 		char hexStr[16];
 		uint8_t iter = iteration;
 
-		HwAbUart_SendString("Run [");
-		HwAbUart_SendString(currentStateName);
-		HwAbUart_SendString("] iteration [");
+		(*ui->sendString)("Run [");
+		(*ui->sendString)(currentStateName);
+		(*ui->sendString)("] iteration [");
 		BytesToHexString( hexStr, sizeof(hexStr)/sizeof(hexStr[0]), &iter, sizeof(iter) );
-		HwAbUart_SendString(hexStr);
-		HwAbUart_SendString("]\r\n");
+		(*ui->sendString)(hexStr);
+		(*ui->sendString)("]\r\n");
 	}
 
-	rx = HwAbUart_GetRxByte(&valid);
+	rx = ui->getRxByte(&valid);
 	if( valid )
 	{
 		ProcessRx( rx );
@@ -109,15 +134,43 @@ static void DoExit(int16_t exitingState, int16_t nextState, int16_t signal )
 	const char* nextStateName = stateTbl[nextState].name;
 	const char* signalName = signalTbl[signal].name;
 
-	while( ! HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
+	while( ! (*ui->isTxBufferClear)() ) {} // BUSY WAIT
 
-	HwAbUart_SendString("Exiting [");
-	HwAbUart_SendString(exitingStateName);
-	HwAbUart_SendString("] to [");
-	HwAbUart_SendString(nextStateName);
-	HwAbUart_SendString("] on signal [");
-	HwAbUart_SendString(signalName);
-	HwAbUart_SendString("]\r\n");
+	(*ui->sendString)("Exiting [");
+	(*ui->sendString)(exitingStateName);
+	(*ui->sendString)("] to [");
+	(*ui->sendString)(nextStateName);
+	(*ui->sendString)("] on signal [");
+	(*ui->sendString)(signalName);
+	(*ui->sendString)("]\r\n");
+}
+
+
+static void BytesToHexString( char* stringBuff, uint16_t buffLen, const void *bytes, uint8_t bytesCount )
+{
+	static const char hexVal[] = "0123456789ABCDEF";
+
+	uint8_t i = 0;
+	uint8_t *b = (uint8_t*) bytes;
+	uint8_t *bEnd = &(b[bytesCount]);
+
+
+	while( (b < bEnd) && (i < (buffLen-3)))
+	{
+		stringBuff[i] = hexVal[ (*b>>4) & 0x0F ];
+		i++;
+		stringBuff[i] = hexVal[ (*b) & 0x0F ];
+		i++;
+		stringBuff[i] = '.';
+		b++;
+	}
+
+	// Null terminate the string
+	if( i >= buffLen-1 )
+	{
+		i = buffLen-1;
+	}
+	stringBuff[i] = 0;
 }
 
 //****************************************************************************************

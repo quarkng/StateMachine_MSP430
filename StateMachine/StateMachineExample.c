@@ -13,13 +13,18 @@
 
 #include "StateMachineBase/StaMchBase.h"
 
+#ifndef NULLPTR
+	#define NULLPTR (0)
+#endif
+//****************************************************************************************
 
  static StaMchBase_t stateMachine;
 
 //****************************************************************************************
 
-void StateMachineExample(void)
+ void StateMachineExample(const InfUserStream_t *userStream)
 {
+	 StateMachineExampleFunctions_Init(userStream);
 
 	StaMchBase_Init( &stateMachine,	ExSta_Count, ExSig_Count, stateTbl, signalTbl);
 
@@ -28,7 +33,15 @@ void StateMachineExample(void)
 		for(;;) {} // Trap on severe error
 	}
 
-	StaMchBase_PrintCsvTable( &stateMachine );
+	while(! (*userStream->isTxBufferClear)() ) {} // BUSY WAIT
+	(*userStream->sendString)("#################################\r\n");
+	while(! (*userStream->isTxBufferClear)() ) {} // BUSY WAIT
+
+	StaMchBase_PrintCsvTable( &stateMachine, userStream );
+
+	while(! (*userStream->isTxBufferClear)() ) {} // BUSY WAIT
+	(*userStream->sendString)("#################################\r\n");
+	while(! (*userStream->isTxBufferClear)() ) {} // BUSY WAIT
 
 
 	StaMchBase_SetInitialState( &stateMachine, ExStaAAA );
@@ -44,3 +57,9 @@ bool StateMachineExample_Signal(uint8_t signalEnumVal)
 {
 	return StaMchBase_SignalTransition( &stateMachine, signalEnumVal );
 }
+
+
+
+
+
+

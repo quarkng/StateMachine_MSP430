@@ -13,6 +13,9 @@
 #include "StaMchSignal.h"
 #include "StaMchState.h"
 
+#include "InfUserStream.h"
+
+
 typedef struct
 {
 	int16_t currentState;
@@ -29,8 +32,10 @@ typedef struct
 }
 StaMchBase_t;
 
+typedef void (*StaMchBase_sendString_t)(const char *pcBuffer); // Function called to output a string to console
+typedef bool (*StaMchBase_isBufferClearedFunc_t)(void); // Function called before putting more bytes into output buffer
 
-
+//****************************************************************************************
 void StaMchBase_Init( StaMchBase_t *context,
 					  uint8_t stateCount, uint8_t sigCount,
 					  const StaMchState_t *states, const StaMchSignal_t *signals);
@@ -46,6 +51,6 @@ bool StaMchBase_SignalTransition( StaMchBase_t *context, uint8_t signalEnumVal )
 
 
 // This is used for checking transition tables and state tables
-void StaMchBase_PrintCsvTable( const StaMchBase_t *context );
+void StaMchBase_PrintCsvTable(  StaMchBase_t *context, const InfUserStream_t *userStream );
 
 #endif /* STAMCHBASE_H_ */

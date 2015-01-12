@@ -1,6 +1,7 @@
 
 #include "msp430fr5969.h"
 
+#include "InfUserStream.h"
 #include "HwAbUart.h"
 #include "__LogTraceExample.h"
 #include "StateMachineExample.h"
@@ -16,11 +17,10 @@ static void BlinkOnStartup( void );
 static void HardwareInit( void );
 
 //****************************************************************************************
-int _system_pre_init(void)
+int _system_pre_init(void) // called
 {
     // Stop Watchdog timer
     WDTCTL = WDTPW | WDTHOLD;               // Stop watchdog timer
-
 
     /*==================================*/
     /* Choose if segment initialization */
@@ -33,23 +33,28 @@ int _system_pre_init(void)
 
 //****************************************************************************************
 void main(void) {
+	InfUserStream_t userInterface;
+
     HardwareInit();
 
-//	HwAbUart_SendString("\r\n**BEGIN**\r\n");
-//	__delay_cycles(8000000);
-//	HwAbUart_SendString("uart TX test\r\n");
+    InfUserStream_InitDefaults(&userInterface);
+    userInterface.sendBytes = &HwAbUart_Send;
+    userInterface.sendString = &HwAbUart_SendString;
+    userInterface.isTxBufferClear = &HwAbUart_IsDoneTransmitting;
+    userInterface.getRxByte = &HwAbUart_GetRxByte;
+    userInterface.getRxContent = &HwAbUart_GetRxContent;
 
     BlinkOnStartup();
 
 //	LogTraceExample();
-//	HwAbUart_SendString("\r\n\r\n");
-//	while( ! HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
+//	(*userInterface.sendString)("\r\n\r\n");
+//	while( ! (*userInterface.isTxBufferClear)() ) {} // BUSY WAIT
 
 
-	StateMachineExample();
-	while( ! HwAbUart_IsDoneTransmitting() ) {} // BUSY WAIT
-	HwAbUart_SendString("Completed StateMachineExample");
-	HwAbUart_SendString("\r\n\r\n");
+	StateMachineExample( &userInterface );
+	while( ! (*userInterface.isTxBufferClear)() ) {} // BUSY WAIT
+	(*userInterface.sendString)("Completed StateMachineExample");
+	(*userInterface.sendString)("\r\n\r\n");
 
 	__no_operation();
 
