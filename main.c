@@ -37,12 +37,15 @@ void main(void) {
 
     HardwareInit();
 
+
+	HwAbUart_Init();
     InfUserStream_InitDefaults(&userInterface);
     userInterface.sendBytes = &HwAbUart_Send;
     userInterface.sendString = &HwAbUart_SendString;
     userInterface.isTxBufferClear = &HwAbUart_IsDoneTransmitting;
     userInterface.getRxByte = &HwAbUart_GetRxByte;
     userInterface.getRxContent = &HwAbUart_GetRxContent;
+
 
     BlinkOnStartup();
 
@@ -97,8 +100,6 @@ static void HardwareInit( void )
     Init_UART();
 
     __enable_interrupt();     // Enable globale interrupt
-
-	HwAbUart_Init();
 }
 
 //****************************************************************************************

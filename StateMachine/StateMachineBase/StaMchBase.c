@@ -11,6 +11,10 @@
 	#define NULL (0)
 #endif
 
+
+static void uint16ToHexString( char* stringBuff, uint16_t buffLen, uint16_t value );
+
+
 //****************************************************************************************
 void StaMchBase_Init( StaMchBase_t *context,
 					  uint8_t stateCount, uint8_t sigCount,
@@ -223,4 +227,85 @@ void StaMchBase_PrintCsvTable(  StaMchBase_t *context, const InfUserStream_t *us
 
 		(*userStream->sendString)("\r\n");
 	}
+}
+
+
+//****************************************************************************************
+void StaMchBase_PrintPlantUmlTable(  StaMchBase_t *context, const InfUserStream_t *userStream, uint8_t initialStateEnumVal )
+{
+	char stateAlias[8];
+	uint16_t stateNum;
+	uint16_t transNum;
+
+	(*userStream->sendString)("@startuml\r\n");
+
+	for( stateNum=0; stateNum < context->stateCount; stateNum++ )
+	{
+		while(! (*userStream->isTxBufferClear)() ) {} // BUSY WAIT
+		(*userStream->sendString)("state \"");
+		(*userStream->sendString)(context->states[stateNum].name);
+		(*userStream->sendString)("\" as s");
+
+		uint16ToHexString(stateAlias, sizeof(stateAlias), stateNum );
+		(*userStream->sendString)(stateAlias);
+		(*userStream->sendString)("\r\n");
+	}
+
+	for( stateNum=0; stateNum < context->stateCount; stateNum++ )
+	{
+		const StaMchState_t *fromState = &(context->states[stateNum]);
+
+		stateAlias[0] = 's';
+		uint16ToHexString( &stateAlias[1], sizeof(stateAlias)-1, stateNum );
+
+		if( stateNum == initialStateEnumVal )
+		{	// This is the initial state
+			(*userStream->sendString)( "[*] --> " );
+			(*userStream->sendString)( stateAlias );
+			(*userStream->sendString)( "\r\n" );
+		}
+
+		for( transNum=0; transNum < context->sigCount; transNum++ )
+		{
+			int16_t sigNum = fromState->transitions[transNum].signalEnumVal;
+
+			 if( sigNum < 0)
+			 {
+				 break; // end of transitions list
+			 }
+			 else
+			 {
+				 char toStateAlias[8];
+				 uint16_t toStaNum = fromState->transitions[transNum].nextStateEnumVal;
+
+				 toStateAlias[0] = 's';
+				 uint16ToHexString( &toStateAlias[1], sizeof(toStateAlias)-1, toStaNum );
+
+				 while(! (*userStream->isTxBufferClear)() ) {} // BUSY WAIT
+				 (*userStream->sendString)( stateAlias );
+				 (*userStream->sendString)( " --> " );
+				 (*userStream->sendString)( toStateAlias );
+				 (*userStream->sendString)( " : " );
+				 (*userStream->sendString)( context->signals[sigNum].name );
+				 (*userStream->sendString)( "\r\n" );
+			 }
+		}
+	}
+
+	while(! (*userStream->isTxBufferClear)() ) {} // BUSY WAIT
+	(*userStream->sendString)("@enduml\r\n");
+}
+
+//****************************************************************************************
+void uint16ToHexString( char* stringBuff, uint16_t buffLen, uint16_t value )
+{
+	static const char hexVal[] = "0123456789ABCDEF";
+	static const uint8_t nibbles = 16/4;
+	int16_t i;
+
+	for( i = 0; (i < nibbles) && i < (buffLen-1) ; i++ )
+	{
+		stringBuff[i] = hexVal[ (value >> ((nibbles-i-1)*4)) & 0x0F ];
+	}
+	stringBuff[i] = 0; // String terminiation
 }

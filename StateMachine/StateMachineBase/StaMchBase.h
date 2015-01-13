@@ -53,4 +53,8 @@ bool StaMchBase_SignalTransition( StaMchBase_t *context, uint8_t signalEnumVal )
 // This is used for checking transition tables and state tables
 void StaMchBase_PrintCsvTable(  StaMchBase_t *context, const InfUserStream_t *userStream );
 
+// This is used for checking transition tables and state tables
+void StaMchBase_PrintPlantUmlTable(  StaMchBase_t *context, const InfUserStream_t *userStream, uint8_t initialStateEnumVal );
+
+
 #endif /* STAMCHBASE_H_ */

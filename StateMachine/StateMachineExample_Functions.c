@@ -12,11 +12,7 @@
 #include "StateMachineExample_StateAndSig.h"
 #include "StateMachineExample_Tables.h"
 
-//#include "HwAbUart.h"
-//#include "BytesToHexString.h"
-
 bool exitExample = false;
-
 
 //****************************************************************************************
 static void BytesToHexString( char* stringBuff, uint16_t buffLen, const void *bytes, uint8_t bytesCount );

@@ -34,15 +34,20 @@
 	}
 
 	while(! (*userStream->isTxBufferClear)() ) {} // BUSY WAIT
-	(*userStream->sendString)("#################################\r\n");
+	(*userStream->sendString)("################################# CSV Table\r\n");
 	while(! (*userStream->isTxBufferClear)() ) {} // BUSY WAIT
 
 	StaMchBase_PrintCsvTable( &stateMachine, userStream );
 
 	while(! (*userStream->isTxBufferClear)() ) {} // BUSY WAIT
-	(*userStream->sendString)("#################################\r\n");
+	(*userStream->sendString)("################################# Plant UML\r\n");
 	while(! (*userStream->isTxBufferClear)() ) {} // BUSY WAIT
 
+	StaMchBase_PrintPlantUmlTable( &stateMachine, userStream, ExStaAAA );
+
+	while(! (*userStream->isTxBufferClear)() ) {} // BUSY WAIT
+	(*userStream->sendString)("################################# Test state machine\r\n");
+	while(! (*userStream->isTxBufferClear)() ) {} // BUSY WAIT
 
 	StaMchBase_SetInitialState( &stateMachine, ExStaAAA );
 
